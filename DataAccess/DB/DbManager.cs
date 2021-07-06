@@ -44,8 +44,9 @@ namespace DataAccess.DB {
                 
             } catch (Exception ex) {
 
-                Logger.LogError($"Error occured while getting records from [{tblName}] table.", ex);
-                throw ex;
+                var msg = $"Error occured while getting records from [{tblName}] table.";
+                Logger.LogError(msg, ex);
+                throw new Exception(msg);
 
             }
         }
@@ -64,8 +65,9 @@ namespace DataAccess.DB {
 
             } catch (Exception ex) {
 
-                Logger.LogError($"Error occured while inserting a record in [{tblName}] table.", ex);
-                throw ex;
+                var msg = $"Error occured while inserting a record in [{tblName}] table.";
+                Logger.LogError(msg, ex);
+                throw new Exception(msg);
 
             }
         }
@@ -84,8 +86,9 @@ namespace DataAccess.DB {
 
             } catch (Exception ex) {
 
-                Logger.LogError($"Error occured while updating record(s) in [{tblName}] table.", ex);
-                throw ex;
+                var msg = $"Error occured while updating record(s) in [{tblName}] table.";
+                Logger.LogError(msg, ex);
+                throw new Exception(msg);
 
             }
         }
@@ -104,8 +107,9 @@ namespace DataAccess.DB {
 
             } catch (Exception ex) {
 
-                Logger.LogError($"Error occured while deleting record(s) from [{tblName}] table.", ex);
-                throw ex;
+                var msg = $"Error occured while deleting record(s) from [{tblName}] table.";
+                Logger.LogError(msg, ex);
+                throw new Exception(msg);
 
             }
         }

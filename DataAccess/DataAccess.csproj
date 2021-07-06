@@ -41,16 +41,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CSV\CsvConstants.cs" />
+    <Compile Include="CSV\CsvReader.cs" />
     <Compile Include="DB\DbConstants.cs" />
     <Compile Include="DB\DbManager.cs" />
     <Compile Include="DB\StatementType.cs" />
     <Compile Include="LogFile\Logger.cs" />
     <Compile Include="LogFile\LogType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XML\XmlConstants.cs" />
+    <Compile Include="XML\XmlReader.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="CSV\" />
-    <Folder Include="XML\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -4,17 +4,49 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Data;
 using DataAccess.LogFile;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace DataAccess.DB {
     public class DbManager {
 
         private const string _connectionString = @"data source=DESKTOP-VLS8U5D\SQLEXPRESS;initial catalog=BUSINESS_CARDS_INFO_APP; persist security info=True; Integrated Security = SSPI;";
 
+        public static bool IsUserCredentailsValid(string userName, string password) {
+
+            var hashedPassword = GetHashedPassword(password);
+            var whereClause = $"{DbConstants.FldUserName} = '{userName}' and {DbConstants.FldPassword} = '{hashedPassword}'";
+
+            try {
+
+                var records = GetRecords(DbConstants.TblUserCredentials, whereClause);
+                return records.Count > 0;
+
+            } catch (Exception) {
+                throw;
+            }
+        }
+
+        public static string GetHashedPassword(string password) {
+
+            //The Hashing Algorithm
+            var data = Encoding.ASCII.GetBytes(password);
+            var sha1 = new SHA1CryptoServiceProvider();
+            var sha1Data = sha1.ComputeHash(data);
+            ASCIIEncoding ascii = new ASCIIEncoding();
+            var hashedPassword = ascii.GetString(sha1Data);
+
+            return hashedPassword;
+
+        }
+
         public static List<Dictionary<string, object>> GetRecords(string tblName, string whereClause = null) {
 
             try {
 
                 using(SqlConnection conn = new SqlConnection(_connectionString)) {
+
+                    conn.Open();
 
                     var where = string.IsNullOrWhiteSpace(whereClause) ? string.Empty : $" WHERE {whereClause}";
                     var query = $"SELECT * FROM {tblName}{where}";
@@ -57,6 +89,8 @@ namespace DataAccess.DB {
 
                 using (SqlConnection conn = new SqlConnection(_connectionString)) {
 
+                    conn.Open();
+
                     var query = GetProperStatement(tblName, null, StatementType.Insert, fldValPair);
                     var cmd = new SqlCommand(query, conn);
                     cmd.ExecuteNonQuery();
@@ -78,6 +112,8 @@ namespace DataAccess.DB {
 
                 using (SqlConnection conn = new SqlConnection(_connectionString)) {
 
+                    conn.Open();
+
                     var query = GetProperStatement(tblName, whereClause, StatementType.Update, fldValPair);
                     var cmd = new SqlCommand(query, conn);
                     cmd.ExecuteNonQuery();
@@ -98,6 +134,8 @@ namespace DataAccess.DB {
             try {
 
                 using (SqlConnection conn = new SqlConnection(_connectionString)) {
+
+                    conn.Open();
 
                     var query = GetProperStatement(tblName, whereClause, StatementType.Delete);
                     var cmd = new SqlCommand(query, conn);

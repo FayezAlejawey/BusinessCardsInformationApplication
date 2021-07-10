@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using DataAccess.LogFile;
 
 namespace DataAccess.CSV {
     public class CsvReader {
@@ -10,12 +11,16 @@ namespace DataAccess.CSV {
 
             var csvExtenstion = Path.GetExtension(csvAbsolutePath);
             if(!string.Equals(csvExtenstion, "csv", StringComparison.OrdinalIgnoreCase)) {
-                throw new Exception($"The specified absolute path [{csvAbsolutePath}] isn't for CSV file.");
+                var msg = $"The specified absolute path [{csvAbsolutePath}] isn't for CSV file.";
+                Logger.LogError(msg);
+                throw new Exception(msg);
             }
 
             var isFileExists = File.Exists(csvAbsolutePath);
             if (!isFileExists) {
-                throw new Exception($"The specified absolute path [{csvAbsolutePath}] for CSV file doesn't exists.");
+                var msg = $"The specified absolute path [{csvAbsolutePath}] for CSV file doesn't exists.";
+                Logger.LogError(msg);
+                throw new Exception(msg);
             }
 
             var records = new List<Dictionary<string, object>>();

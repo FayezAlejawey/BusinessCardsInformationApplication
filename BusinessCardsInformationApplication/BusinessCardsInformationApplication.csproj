@@ -106,6 +106,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="BusinessCardInsertion.aspx" />
+    <Content Include="BusinessCardsList.aspx" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -168,8 +169,16 @@
     <Compile Include="BusinessCardInsertion.aspx.designer.cs">
       <DependentUpon>BusinessCardInsertion.aspx</DependentUpon>
     </Compile>
+    <Compile Include="BusinessCardsList.aspx.cs">
+      <DependentUpon>BusinessCardsList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="BusinessCardsList.aspx.designer.cs">
+      <DependentUpon>BusinessCardsList.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Common\Constants.cs" />
     <Compile Include="Common\Helper.cs" />
+    <Compile Include="DataObject\BusinessCardInformation.cs" />
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

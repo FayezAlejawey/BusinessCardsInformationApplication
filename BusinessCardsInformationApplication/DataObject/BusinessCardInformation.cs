@@ -4,6 +4,7 @@ using System.Linq;
 using DataAccess.CSV;
 using DataAccess.XML;
 using DataAccess.LogFile;
+using DataAccess.DB;
 
 namespace BusinessCardsInformationApplication.DataObject {
     public class BusinessCardInformation {
@@ -11,7 +12,7 @@ namespace BusinessCardsInformationApplication.DataObject {
         public int Id { get; set; }
         public string Name { get; set; }
         public string Gender { get; set; }
-        public DateTime DateOfBirth { get; set; }
+        public string DateOfBirth { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
         public string Photo { get; set; }
@@ -21,16 +22,22 @@ namespace BusinessCardsInformationApplication.DataObject {
         public BusinessCardInformation(int id, string name, string gender, string dateTime, string email, 
             string phone, string photo, string address) {
 
+            Id = id;
+            Name = name;
+            Gender = gender;
+            DateOfBirth = dateTime;
+            Email = email;
+            Phone = phone;
+            Photo = photo;
+            Address = address;
+
+        }
+
+        public BusinessCardInformation(Dictionary<string, object> dbRecord) {
+
             try {
 
-                Id = id;
-                Name = name;
-                Gender = gender;
-                DateOfBirth = ConvertStringToDateTime(dateTime);
-                Email = email;
-                Phone = phone;
-                Photo = photo;
-                Address = address;
+                SetBusinessCardInformationFromDb(dbRecord);
 
             } catch (Exception) {
                 throw;
@@ -44,7 +51,7 @@ namespace BusinessCardsInformationApplication.DataObject {
                 var cardsData = isXml ? XmlReader.GetXmlData(fileAbsolutePath) : CsvReader.GetCsvData(fileAbsolutePath);
                 var cardData = cardsData.FirstOrDefault();
                 if(cardData is null) {
-                    var msg = "No data where found within the imported file.";
+                    var msg = "No data were found within the imported file.";
                     Logger.LogError(msg);
                     throw new Exception(msg);
                 }
@@ -61,53 +68,122 @@ namespace BusinessCardsInformationApplication.DataObject {
             }
         }
 
+        private void SetBusinessCardInformationFromDb(Dictionary<string, object> cardData) {
+
+            if (!cardData.ContainsKey(DbConstants.FldId)) {
+                var msg = $"No field for [{DbConstants.FldId}] was found within the retrieved database record.";
+                Logger.LogError(msg);
+                throw new Exception(msg);
+            }
+
+            if (!cardData.ContainsKey(DbConstants.FldName)) {
+                var msg = $"No field for [{DbConstants.FldName}] was found within the retrieved database record.";
+                Logger.LogError(msg);
+                throw new Exception(msg);
+            }
+
+            if (!cardData.ContainsKey(DbConstants.FldGender)) {
+                var msg = $"No field for [{DbConstants.FldGender}] was found within the retrieved database record.";
+                Logger.LogError(msg);
+                throw new Exception(msg);
+            }
+
+            if (!cardData.ContainsKey(DbConstants.FldDateOfBirth)) {
+                var msg = $"No field for [{DbConstants.FldDateOfBirth}] was found within the retrieved database record.";
+                Logger.LogError(msg);
+                throw new Exception(msg);
+            }
+
+            if (!cardData.ContainsKey(DbConstants.FldEmail)) {
+                var msg = $"No field for [{DbConstants.FldEmail}] was found within the retrieved database record.";
+                Logger.LogError(msg);
+                throw new Exception(msg);
+            }
+
+            if (!cardData.ContainsKey(DbConstants.FldPhone)) {
+                var msg = $"No field for [{DbConstants.FldPhone}] was found within the retrieved database record.";
+                Logger.LogError(msg);
+                throw new Exception(msg);
+            }
+
+            if (!cardData.ContainsKey(DbConstants.FldPhoto)) {
+                var msg = $"No field for [{DbConstants.FldPhoto}] was found within the retrieved database record.";
+                Logger.LogError(msg);
+                throw new Exception(msg);
+            }
+
+            if (!cardData.ContainsKey(DbConstants.FldAddress)) {
+                var msg = $"No field for [{DbConstants.FldAddress}] was found within the retrieved database record.";
+                Logger.LogError(msg);
+                throw new Exception(msg);
+            }
+
+            string idStr = cardData[DbConstants.FldId].ToString();
+            int id;
+            if(!int.TryParse(idStr, out id)) {
+                var msg = $"The retrieved ID [{idStr}] can't be converted to int data type";
+                Logger.LogError(msg);
+                throw new Exception(msg);
+            }
+
+            Id = id;
+            Name = cardData[DbConstants.FldName].ToString();
+            Gender = cardData[DbConstants.FldGender].ToString();
+            DateOfBirth = cardData[DbConstants.FldDateOfBirth].ToString();
+            Email = cardData[DbConstants.FldEmail].ToString();
+            Phone = cardData[DbConstants.FldPhone].ToString();
+            Photo = cardData[DbConstants.FldPhoto].ToString();
+            Address = cardData[DbConstants.FldAddress].ToString();
+
+        }
+
         private void SetBusinessCardInformationFromXml(Dictionary<string, object> cardData) {
 
             if (!cardData.ContainsKey(XmlConstants.ChildElementName)) {
-                var msg = $"No element for [{XmlConstants.ChildElementName}] where found within the imported XML file.";
+                var msg = $"No element for [{XmlConstants.ChildElementName}] was found within the imported XML file.";
                 Logger.LogError(msg);
                 throw new Exception(msg);
             }
 
             if (!cardData.ContainsKey(XmlConstants.ChildElementGender)) {
-                var msg = $"No element for [{XmlConstants.ChildElementGender}] where found within the imported XML file.";
+                var msg = $"No element for [{XmlConstants.ChildElementGender}] was found within the imported XML file.";
                 Logger.LogError(msg);
                 throw new Exception(msg);
             }
 
             if (!cardData.ContainsKey(XmlConstants.ChildElementDob)) {
-                var msg = $"No element for [{XmlConstants.ChildElementDob}] where found within the imported XML file.";
+                var msg = $"No element for [{XmlConstants.ChildElementDob}] was found within the imported XML file.";
                 Logger.LogError(msg);
                 throw new Exception(msg);
             }
 
             if (!cardData.ContainsKey(XmlConstants.ChildElementEmail)) {
-                var msg = $"No element for [{XmlConstants.ChildElementEmail}] where found within the imported XML file.";
+                var msg = $"No element for [{XmlConstants.ChildElementEmail}] was found within the imported XML file.";
                 Logger.LogError(msg);
                 throw new Exception(msg);
             }
 
             if (!cardData.ContainsKey(XmlConstants.ChildElementPhone)) {
-                var msg = $"No element for [{XmlConstants.ChildElementPhone}] where found within the imported XML file.";
+                var msg = $"No element for [{XmlConstants.ChildElementPhone}] was found within the imported XML file.";
                 Logger.LogError(msg);
                 throw new Exception(msg);
             }
 
             if (!cardData.ContainsKey(XmlConstants.ChildElementPhoto)) {
-                var msg = $"No element for [{XmlConstants.ChildElementPhoto}] where found within the imported XML file.";
+                var msg = $"No element for [{XmlConstants.ChildElementPhoto}] was found within the imported XML file.";
                 Logger.LogError(msg);
                 throw new Exception(msg);
             }
 
             if (!cardData.ContainsKey(XmlConstants.ChildElementAddress)) {
-                var msg = $"No element for [{XmlConstants.ChildElementAddress}] where found within the imported XML file.";
+                var msg = $"No element for [{XmlConstants.ChildElementAddress}] was found within the imported XML file.";
                 Logger.LogError(msg);
                 throw new Exception(msg);
             }
 
             Name = cardData[XmlConstants.ChildElementName].ToString();
             Gender = cardData[XmlConstants.ChildElementGender].ToString();
-            DateOfBirth = ConvertStringToDateTime(cardData[XmlConstants.ChildElementDob].ToString());
+            DateOfBirth = cardData[XmlConstants.ChildElementDob].ToString();
             Email = cardData[XmlConstants.ChildElementEmail].ToString();
             Phone = cardData[XmlConstants.ChildElementPhone].ToString();
             Photo = cardData[XmlConstants.ChildElementPhoto].ToString();
@@ -118,50 +194,50 @@ namespace BusinessCardsInformationApplication.DataObject {
         private void SetBusinessCardInformationFromCsv(Dictionary<string, object> cardData) {
 
             if (!cardData.ContainsKey(CsvConstants.ColName)) {
-                var msg = $"No element for [{CsvConstants.ColName}] where found within the imported CSV file.";
+                var msg = $"No column for [{CsvConstants.ColName}] was found within the imported CSV file.";
                 Logger.LogError(msg);
                 throw new Exception(msg);
             }
 
             if (!cardData.ContainsKey(CsvConstants.ColGender)) {
-                var msg = $"No element for [{CsvConstants.ColGender}] where found within the imported CSV file.";
+                var msg = $"No column for [{CsvConstants.ColGender}] was found within the imported CSV file.";
                 Logger.LogError(msg);
                 throw new Exception(msg);
             }
 
             if (!cardData.ContainsKey(CsvConstants.ColDateOfBirth)) {
-                var msg = $"No element for [{CsvConstants.ColDateOfBirth}] where found within the imported CSV file.";
+                var msg = $"No column for [{CsvConstants.ColDateOfBirth}] was found within the imported CSV file.";
                 Logger.LogError(msg);
                 throw new Exception(msg);
             }
 
             if (!cardData.ContainsKey(CsvConstants.ColEmail)) {
-                var msg = $"No element for [{CsvConstants.ColEmail}] where found within the imported CSV file.";
+                var msg = $"No column for [{CsvConstants.ColEmail}] was found within the imported CSV file.";
                 Logger.LogError(msg);
                 throw new Exception(msg);
             }
 
             if (!cardData.ContainsKey(CsvConstants.ColPhone)) {
-                var msg = $"No element for [{CsvConstants.ColPhone}] where found within the imported CSV file.";
+                var msg = $"No column for [{CsvConstants.ColPhone}] was found within the imported CSV file.";
                 Logger.LogError(msg);
                 throw new Exception(msg);
             }
 
             if (!cardData.ContainsKey(CsvConstants.ColPhoto)) {
-                var msg = $"No element for [{CsvConstants.ColPhoto}] where found within the imported CSV file.";
+                var msg = $"No column for [{CsvConstants.ColPhoto}] was found within the imported CSV file.";
                 Logger.LogError(msg);
                 throw new Exception(msg);
             }
 
             if (!cardData.ContainsKey(CsvConstants.ColAddress)) {
-                var msg = $"No element for [{CsvConstants.ColAddress}] where found within the imported CSV file.";
+                var msg = $"No column for [{CsvConstants.ColAddress}] was found within the imported CSV file.";
                 Logger.LogError(msg);
                 throw new Exception(msg);
             }
 
             Name = cardData[CsvConstants.ColName].ToString();
             Gender = cardData[CsvConstants.ColGender].ToString();
-            DateOfBirth = ConvertStringToDateTime(cardData[CsvConstants.ColDateOfBirth].ToString());
+            DateOfBirth = cardData[CsvConstants.ColDateOfBirth].ToString();
             Email = cardData[CsvConstants.ColEmail].ToString();
             Phone = cardData[CsvConstants.ColPhone].ToString();
             Photo = cardData[CsvConstants.ColPhoto].ToString();
@@ -169,28 +245,28 @@ namespace BusinessCardsInformationApplication.DataObject {
 
         }
 
-        private DateTime ConvertStringToDateTime(string date) {
+        //private DateTime ConvertStringToDateTime(string date) {
 
-            var dateArr = date.Split('/');
-            var dateArrLen = dateArr.Length;
-            if(dateArrLen != 3) {
-                var msg = $"The sent date [{date}] can't be converted to DateTime data type";
-                Logger.LogError(msg);
-                throw new Exception(msg);
-            }
+        //    var dateArr = date.Split('/');
+        //    var dateArrLen = dateArr.Length;
+        //    if(dateArrLen != 3) {
+        //        var msg = $"The sent date [{date}] can't be converted to DateTime data type";
+        //        Logger.LogError(msg);
+        //        throw new Exception(msg);
+        //    }
 
-            var day = dateArr[0];
-            var month = dateArr[1];
-            var year = dateArr[2];
+        //    var day = dateArr[0];
+        //    var month = dateArr[1];
+        //    var year = dateArr[2];
 
-            int dayInt, monthInt, yearInt;
-            if(int.TryParse(day, out dayInt) && int.TryParse(month, out monthInt) && int.TryParse(year, out yearInt)) {
-                return new DateTime(yearInt, monthInt, dayInt);
-            } else {
-                var msg = $"The sent date [{date}] can't be converted to DateTime data type";
-                Logger.LogError(msg);
-                throw new Exception(msg);
-            }
-        }
+        //    int dayInt, monthInt, yearInt;
+        //    if(int.TryParse(day, out dayInt) && int.TryParse(month, out monthInt) && int.TryParse(year, out yearInt)) {
+        //        return new DateTime(yearInt, monthInt, dayInt);
+        //    } else {
+        //        var msg = $"The sent date [{date}] can't be converted to DateTime data type";
+        //        Logger.LogError(msg);
+        //        throw new Exception(msg);
+        //    }
+        //}
     }
 }

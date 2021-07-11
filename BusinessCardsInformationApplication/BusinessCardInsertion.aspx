@@ -13,8 +13,14 @@
         <p>Input business card information either by using the form below or by importing data from a CSV or XML file</p>
         <form id="form1" runat="server">
             <div class="container">
-                <asp:Button runat="server" class="btn btn-info btn-md" ID="btnImportXml" OnClick="BtnImportXmlClicked" Text="Import XML"/>&nbsp;&nbsp;&nbsp;
-                <asp:Button runat="server" class="btn btn-info btn-md" ID="btnImportCsv" OnClick="BtnImportCsvClicked" Text="Import CSV"/>
+                <asp:Button runat="server" class="btn btn-info btn-md" ID="btnGoToCardsLst" OnClick="BtnGoToCardsLstClicked" Text="Go To Business Cards List" />
+            </div>
+
+            <br />
+
+            <div class="container">
+                <asp:Button runat="server" class="btn btn-info btn-md" ID="btnImportXml" OnClick="BtnImportXmlClicked" Text="Import XML Data"/>&nbsp;&nbsp;&nbsp;
+                <asp:Button runat="server" class="btn btn-info btn-md" ID="btnImportCsv" OnClick="BtnImportCsvClicked" Text="Import CSV Data"/>
             </div>
             <div class="form-group">
                 <label for="txtBxName">Name:</label>

@@ -22,7 +22,8 @@ namespace BusinessCardsInformationApplication {
 
             try {
 
-                var isEnteredCredentialsValid = DbManager.IsUserCredentailsValid(userName, password);
+                var dbMngr = new DbManager(DbConstants.ServerName, DbConstants.DbName, DbConstants.TblBusinessCardsInfoSchema);
+                var isEnteredCredentialsValid = dbMngr.IsUserCredentailsValid(userName, password);
                 if (!isEnteredCredentialsValid) {
                     Helper.ShowAlert(Page, "Invalid user name & password");
                     return;

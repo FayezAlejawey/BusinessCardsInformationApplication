@@ -1,18 +1,24 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Collections.Generic;
 using System.Data;
 using DataAccess.LogFile;
 using System.Security.Cryptography;
 using System.Text;
+using System.Data.SqlClient;
 
 namespace DataAccess.DB {
     public class DbManager {
 
-        private const string _connectionString = @"data source=DESKTOP-VLS8U5D\SQLEXPRESS;initial catalog=BUSINESS_CARDS_INFO_APP; persist security info=True; Integrated Security = SSPI;";
+        private readonly string _connectionString;
+        private readonly string _schemaOwner;
 
-        public static bool IsUserCredentailsValid(string userName, string password) {
+        public DbManager(string serverName, string database, string schemaOwner) {
+            _connectionString = $@"data source={serverName};initial catalog={database}; persist security info=True; Integrated Security = SSPI;";
+            _schemaOwner = string.IsNullOrWhiteSpace(schemaOwner) ? string.Empty : schemaOwner + ".";
+        }
+
+        public bool IsUserCredentailsValid(string userName, string password) {
 
             var hashedPassword = GetHashedPassword(password);
             var whereClause = $"{DbConstants.FldUserName} = '{userName}' and {DbConstants.FldPassword} = '{hashedPassword}'";
@@ -27,7 +33,7 @@ namespace DataAccess.DB {
             }
         }
 
-        public static string GetHashedPassword(string password) {
+        public string GetHashedPassword(string password) {
 
             //The Hashing Algorithm
             var data = Encoding.ASCII.GetBytes(password);
@@ -35,12 +41,11 @@ namespace DataAccess.DB {
             var sha1Data = sha1.ComputeHash(data);
             ASCIIEncoding ascii = new ASCIIEncoding();
             var hashedPassword = ascii.GetString(sha1Data);
-
             return hashedPassword;
 
         }
 
-        public static List<Dictionary<string, object>> GetRecords(string tblName, string whereClause = null) {
+        public List<Dictionary<string, object>> GetRecords(string tblName, string whereClause = null) {
 
             try {
 
@@ -49,7 +54,7 @@ namespace DataAccess.DB {
                     conn.Open();
 
                     var where = string.IsNullOrWhiteSpace(whereClause) ? string.Empty : $" WHERE {whereClause}";
-                    var query = $"SELECT * FROM {tblName}{where}";
+                    var query = $"SELECT * FROM {_schemaOwner}{tblName}{where}";
                     var cmd = new SqlCommand(query, conn);
                     string[] restrictions = new string[4] { null, null, tblName, null };
                     var columns = conn.GetSchema("Columns", restrictions).AsEnumerable().Select(s => s.Field<String>("Column_Name")).ToList();
@@ -76,14 +81,14 @@ namespace DataAccess.DB {
                 
             } catch (Exception ex) {
 
-                var msg = $"Error occured while getting records from [{tblName}] table.";
+                var msg = $"Error occured while getting records from [{_schemaOwner}{tblName}] table.";
                 Logger.LogError(msg, ex);
                 throw new Exception(msg);
 
             }
         }
 
-        public static void InsertRecord(string tblName, params (string, object)[] fldValPair) {
+        public void InsertRecord(string tblName, params (string, object)[] fldValPair) {
 
             try {
 
@@ -99,14 +104,14 @@ namespace DataAccess.DB {
 
             } catch (Exception ex) {
 
-                var msg = $"Error occured while inserting a record in [{tblName}] table.";
+                var msg = $"Error occured while inserting a record in [{_schemaOwner}{tblName}] table.";
                 Logger.LogError(msg, ex);
                 throw new Exception(msg);
 
             }
         }
 
-        public static void UpdateRecord(string tblName, string whereClause, params (string, object)[] fldValPair) {
+        public void UpdateRecord(string tblName, string whereClause, params (string, object)[] fldValPair) {
 
             try {
 
@@ -122,14 +127,14 @@ namespace DataAccess.DB {
 
             } catch (Exception ex) {
 
-                var msg = $"Error occured while updating record(s) in [{tblName}] table.";
+                var msg = $"Error occured while updating record(s) in [{_schemaOwner}{tblName}] table.";
                 Logger.LogError(msg, ex);
                 throw new Exception(msg);
 
             }
         }
 
-        public static void DeleteRecord(string tblName, string whereClause) {
+        public void DeleteRecord(string tblName, string whereClause) {
 
             try {
 
@@ -145,14 +150,14 @@ namespace DataAccess.DB {
 
             } catch (Exception ex) {
 
-                var msg = $"Error occured while deleting record(s) from [{tblName}] table.";
+                var msg = $"Error occured while deleting record(s) from [{_schemaOwner}{tblName}] table.";
                 Logger.LogError(msg, ex);
                 throw new Exception(msg);
 
             }
         }
 
-        private static string GetProperStatement(string tblName, string whereClause, 
+        private string GetProperStatement(string tblName, string whereClause, 
             StatementType type, params (string, object)[] fldValPair) {
 
             switch (type) {
@@ -165,7 +170,7 @@ namespace DataAccess.DB {
             }
         }
 
-        private static string GetInsertStatement(string tblName, params (string fld, object val)[] fldValPair) {
+        private string GetInsertStatement(string tblName, params (string fld, object val)[] fldValPair) {
 
             var flds = fldValPair.Select(e => e.fld).ToArray();
             var vals = fldValPair.Select(e => $"'{e.val}'").ToArray();
@@ -173,28 +178,28 @@ namespace DataAccess.DB {
             var fldsStr = string.Join(",", flds);
             var valsStr = string.Join(",", vals);
 
-            var query = $"INSERT INTO {tblName} ({fldsStr}) VALUES ({valsStr})";
+            var query = $"INSERT INTO {_schemaOwner}{tblName} ({fldsStr}) VALUES ({valsStr})";
             return query;
 
         }
 
-        private static string GetUpdateStatement(string tblName, string whereClause, params (string fld, object val)[] fldValPair) {
+        private string GetUpdateStatement(string tblName, string whereClause, params (string fld, object val)[] fldValPair) {
 
             var fldValPairs = fldValPair.Select(e => $"{e.fld}='{e.val}'").ToArray();
             var fldValPairsStr = string.Join(",", fldValPairs);
 
             //whereClause variable can have empty/null value, where in this case all the records within the specified table will be updated
             var where = string.IsNullOrWhiteSpace(whereClause) ? string.Empty : $" WHERE {whereClause}";
-            var query = $"UPDATE {tblName} SET {fldValPairsStr}{where}";
+            var query = $"UPDATE {_schemaOwner}{tblName} SET {fldValPairsStr}{where}";
             return query;
 
         }
 
-        private static string GetDeleteStatement(string tblName, string whereClause) {
+        private string GetDeleteStatement(string tblName, string whereClause) {
 
             //whereClause variable can have empty/null value, where in this case all the records within the specified table will be deleted
             var where = string.IsNullOrWhiteSpace(whereClause) ? string.Empty : $" WHERE {whereClause}";
-            var query = $"DELETE FROM {tblName}{where}";
+            var query = $"DELETE FROM {_schemaOwner}{tblName}{where}";
             return query;
 
         }

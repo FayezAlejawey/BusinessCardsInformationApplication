@@ -10,15 +10,15 @@ namespace BusinessCardsInformationApplication {
 
             if(Session[Constants.Credentials] is null || !Equals(Session[Constants.Credentials], true)) {
                 Response.Redirect("Default.aspx");
-                return;
             }
-
-            //TODO:
-
         }
 
         protected void Page_Load(object sender, EventArgs e) {
             
+        }
+
+        protected void BtnGoToCardsLstClicked(object sender, EventArgs e) {
+            Response.Redirect("BusinessCardsList.aspx");
         }
 
         protected void BtnImportXmlClicked(object sender, EventArgs e) {
@@ -34,10 +34,15 @@ namespace BusinessCardsInformationApplication {
             try {
 
                 var businessCardObject = GetBusinessCardInformationFromUI();
-                DbManager.InsertRecord(DbConstants.TblBusinessCardsInfo, (DbConstants.FldId, businessCardObject.Id),
-                    (DbConstants.FldName, businessCardObject.Name), (DbConstants.FldGender, businessCardObject.Gender),
-                    (DbConstants.FldDateOfBirth, businessCardObject.DateOfBirth), (DbConstants.FldEmail, businessCardObject.Email),
-                    (DbConstants.FldPhone, businessCardObject.Phone), (DbConstants.FldPhoto, businessCardObject.Photo),
+
+                var dbMngr = new DbManager(DbConstants.ServerName, DbConstants.DbName, DbConstants.TblBusinessCardsInfoSchema);
+                dbMngr.InsertRecord(DbConstants.TblBusinessCardsInfo,
+                    (DbConstants.FldName, businessCardObject.Name), 
+                    (DbConstants.FldGender, businessCardObject.Gender),
+                    (DbConstants.FldDateOfBirth, businessCardObject.DateOfBirth), 
+                    (DbConstants.FldEmail, businessCardObject.Email),
+                    (DbConstants.FldPhone, businessCardObject.Phone), 
+                    (DbConstants.FldPhoto, businessCardObject.Photo),
                     (DbConstants.FldAddress, businessCardObject.Address));
                 Response.Redirect("BusinessCardsList.aspx");
 

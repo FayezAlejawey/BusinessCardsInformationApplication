@@ -1,31 +1,15 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using DataAccess.LogFile;
 
 namespace DataAccess.CSV {
     public class CsvReader {
 
-        public static List<Dictionary<string, object>> GetCsvData(string csvAbsolutePath) {
-
-            var csvExtenstion = Path.GetExtension(csvAbsolutePath);
-            if(!string.Equals(csvExtenstion, "csv", StringComparison.OrdinalIgnoreCase)) {
-                var msg = $"The specified absolute path [{csvAbsolutePath}] isn't for CSV file.";
-                Logger.LogError(msg);
-                throw new Exception(msg);
-            }
-
-            var isFileExists = File.Exists(csvAbsolutePath);
-            if (!isFileExists) {
-                var msg = $"The specified absolute path [{csvAbsolutePath}] for CSV file doesn't exists.";
-                Logger.LogError(msg);
-                throw new Exception(msg);
-            }
+        public static List<Dictionary<string, object>> GetCsvData(Stream stream) {
 
             var records = new List<Dictionary<string, object>>();
             var columns = new List<string>();
-            using(StreamReader reader = new StreamReader(csvAbsolutePath)) {
+            using(StreamReader reader = new StreamReader(stream)) {
 
                 var isColLine = true;
                 var line = reader.ReadLine();

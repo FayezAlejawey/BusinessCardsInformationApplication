@@ -43,10 +43,10 @@ namespace BusinessCardsInformationApplication {
         }
 
         protected void BtnDeleteClicked(object sender, EventArgs e) {
-
-            var repItem = sender as RepeaterItem;
-            var cardInfo = repItem.DataItem as BusinessCardInformation;
-            var id = cardInfo.Id;
+            
+            var repItemIndex = ((RepeaterItem)((Button)sender).Parent).ItemIndex;
+            var targetBusinessCard = _businessCardsLst[repItemIndex];
+            var id = targetBusinessCard.Id;
 
             try {
 
@@ -55,11 +55,19 @@ namespace BusinessCardsInformationApplication {
                 var whereClause = $"{DbConstants.FldId} = {id}";
                 dbMngr.DeleteRecord(DbConstants.TblBusinessCardsInfo, whereClause);
 
+                _businessCardsLst.RemoveAt(repItemIndex);
+                repeaterBusinessCards.DataSource = _businessCardsLst;
+                repeaterBusinessCards.DataBind();
+
             } catch (Exception ex) {
                 //If an exception occured, the reached message for the user to read is clear and straight forward
                 //The cause of the exception and the message for it are logged in the logger file before
                 Helper.ShowAlert(Page, ex.Message);
             }
+        }
+
+        protected void BtnAddCardClicked(object sender, EventArgs e) {
+            Response.Redirect("BusinessCardInsertion.aspx");
         }
     }
 }

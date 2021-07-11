@@ -41,6 +41,7 @@ namespace DataAccess.DB {
             var sha1Data = sha1.ComputeHash(data);
             ASCIIEncoding ascii = new ASCIIEncoding();
             var hashedPassword = ascii.GetString(sha1Data);
+
             return hashedPassword;
 
         }

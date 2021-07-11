@@ -1,10 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using DataAccess.CSV;
-using DataAccess.XML;
 using DataAccess.LogFile;
 using DataAccess.DB;
+using DataAccess.XML;
 
 namespace BusinessCardsInformationApplication.DataObject {
     public class BusinessCardInformation {
@@ -44,24 +45,38 @@ namespace BusinessCardsInformationApplication.DataObject {
             }
         }
 
-        public BusinessCardInformation(string fileAbsolutePath, bool isXml) {
+        public BusinessCardInformation(System.Xml.XmlDocument loadedXmlDoc) {
 
             try {
 
-                var cardsData = isXml ? XmlReader.GetXmlData(fileAbsolutePath) : CsvReader.GetCsvData(fileAbsolutePath);
-                var cardData = cardsData.FirstOrDefault();
-                if(cardData is null) {
-                    var msg = "No data were found within the imported file.";
+                var businessCardsInfo = XmlReader.GetXmlData(loadedXmlDoc);
+                var businessCardInfo = businessCardsInfo.FirstOrDefault();
+                if(businessCardInfo is null) {
+                    var msg = "The uploaded XML file has no data within it.";
                     Logger.LogError(msg);
                     throw new Exception(msg);
                 }
 
-                if (isXml) {
-                    SetBusinessCardInformationFromXml(cardData);
-                    return;
-                } 
-                
-                SetBusinessCardInformationFromCsv(cardData);
+                SetBusinessCardInformationFromXml(businessCardInfo);
+
+            } catch (Exception) {
+                throw;
+            }
+        }
+
+        public BusinessCardInformation(Stream stream) {
+
+            try {
+
+                var businessCardsInfo = CsvReader.GetCsvData(stream);
+                var businessCardInfo = businessCardsInfo.FirstOrDefault();
+                if(businessCardInfo is null) {
+                    var msg = "The uploaded CSV file has no data within it.";
+                    Logger.LogError(msg);
+                    throw new Exception(msg);
+                }
+
+                SetBusinessCardInformationFromCsv(businessCardInfo);
 
             } catch (Exception) {
                 throw;

@@ -31,22 +31,40 @@ namespace BusinessCardsInformationApplication {
         protected global::System.Web.UI.WebControls.Button btnGoToCardsLst;
 
         /// <summary>
-        /// btnImportXml control.
+        /// fileUploadXml control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnImportXml;
+        protected global::System.Web.UI.WebControls.FileUpload fileUploadXml;
 
         /// <summary>
-        /// btnImportCsv control.
+        /// btnUploadXml control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnImportCsv;
+        protected global::System.Web.UI.WebControls.Button btnUploadXml;
+
+        /// <summary>
+        /// fileUploadCsv control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.FileUpload fileUploadCsv;
+
+        /// <summary>
+        /// btnUploadCsv control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnUploadCsv;
 
         /// <summary>
         /// txtBxName control.
@@ -58,13 +76,13 @@ namespace BusinessCardsInformationApplication {
         protected global::System.Web.UI.WebControls.TextBox txtBxName;
 
         /// <summary>
-        /// txtBxGender control.
+        /// lstGender control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtBxGender;
+        protected global::System.Web.UI.WebControls.DropDownList lstGender;
 
         /// <summary>
         /// txtBxDateOfBirth control.

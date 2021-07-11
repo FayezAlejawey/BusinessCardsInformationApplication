@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using BusinessCardsInformationApplication.Common;
 using BusinessCardsInformationApplication.DataObject;
 using DataAccess.DB;
+using System.Xml;
+using System.IO;
+using DataAccess.LogFile;
 
 namespace BusinessCardsInformationApplication {
     public partial class BusinessCardInsertion : System.Web.UI.Page {
@@ -11,22 +15,76 @@ namespace BusinessCardsInformationApplication {
             if(Session[Constants.Credentials] is null || !Equals(Session[Constants.Credentials], true)) {
                 Response.Redirect("Default.aspx");
             }
+
+            lstGender.DataSource = new List<string> { "Male", "Female" };
+            lstGender.DataBind();
+
         }
 
         protected void Page_Load(object sender, EventArgs e) {
-            
+
+            fileUploadXml.Attributes["onchange"] = "UploadXmlFile(this)";
+            fileUploadCsv.Attributes["onchange"] = "UploadCsvFile(this)";
+
         }
 
         protected void BtnGoToCardsLstClicked(object sender, EventArgs e) {
             Response.Redirect("BusinessCardsList.aspx");
         }
 
-        protected void BtnImportXmlClicked(object sender, EventArgs e) {
+        protected void BtnUploadXmlClicked(object sender, EventArgs e) {
 
+            try {
+
+                if (!fileUploadXml.HasFile) {
+                    return;
+                }
+
+                var postedFile = fileUploadXml.PostedFile;
+
+                var postedFileName = postedFile.FileName;
+                var xmlExtenstion = Path.GetExtension(postedFileName);
+                if (!string.Equals(xmlExtenstion, ".xml", StringComparison.OrdinalIgnoreCase)) {
+                    var msg = $"The uploaded file [{postedFileName}] isn't an XML file.";
+                    Logger.LogError(msg);
+                    throw new Exception(msg);
+                }
+
+                var xmlDoc = new XmlDocument();
+                xmlDoc.Load(postedFile.InputStream);
+
+                var businessCardInfo = new BusinessCardInformation(xmlDoc);
+                SetBusinessCardInformationToUI(businessCardInfo);
+
+            } catch (Exception ex) {
+                Helper.ShowAlert(Page, ex.Message);
+            }
         }
 
-        protected void BtnImportCsvClicked(object sender, EventArgs e) {
+        protected void BtnUploadCsvClicked(object sender, EventArgs e) {
 
+            try {
+
+                if (!fileUploadCsv.HasFile) {
+                    return;
+                }
+
+                var postedFile = fileUploadCsv.PostedFile;
+
+                var postedFileName = postedFile.FileName;
+                var csvExtenstion = Path.GetExtension(postedFileName);
+                if (!string.Equals(csvExtenstion, ".csv", StringComparison.OrdinalIgnoreCase)) {
+                    var msg = $"The uploaded file [{postedFileName}] isn't an CSV file.";
+                    Logger.LogError(msg);
+                    throw new Exception(msg);
+                }
+
+                var businessCardInfo = new BusinessCardInformation(postedFile.InputStream);
+                SetBusinessCardInformationToUI(businessCardInfo);
+
+            } catch (Exception ex) {
+                Helper.ShowAlert(Page, ex.Message);
+            }
         }
 
         protected void BtnSubmitClicked(object sender, EventArgs e) {
@@ -34,6 +92,10 @@ namespace BusinessCardsInformationApplication {
             try {
 
                 var businessCardObject = GetBusinessCardInformationFromUI();
+                var isEntryValid = CheckEntryValidation(businessCardObject);
+                if (!isEntryValid) {
+                    return;
+                }
 
                 var dbMngr = new DbManager(DbConstants.ServerName, DbConstants.DbName, DbConstants.TblBusinessCardsInfoSchema);
                 dbMngr.InsertRecord(DbConstants.TblBusinessCardsInfo,
@@ -56,7 +118,7 @@ namespace BusinessCardsInformationApplication {
         private BusinessCardInformation GetBusinessCardInformationFromUI() {
 
             var name = txtBxName.Text;
-            var gender = txtBxGender.Text;
+            var gender = lstGender.SelectedValue;
             var dateOfBirth = txtBxDateOfBirth.Text;
             var email = txtBxEmail.Text;
             var phone = txtBxPhone.Text;
@@ -66,6 +128,53 @@ namespace BusinessCardsInformationApplication {
             var businessCardObject = new BusinessCardInformation(0, name, gender, dateOfBirth, email, phone, photo, address);
 
             return businessCardObject;
+
+        }
+
+        private void SetBusinessCardInformationToUI(BusinessCardInformation cardData) {
+
+            txtBxName.Text = cardData.Name;
+            lstGender.SelectedValue = cardData.Gender;
+            txtBxDateOfBirth.Text = cardData.DateOfBirth;
+            txtBxEmail.Text = cardData.Email;
+            txtBxPhone.Text = cardData.Phone;
+            txtBxAddress.Text = cardData.Address;
+
+        }
+
+        private bool CheckEntryValidation(BusinessCardInformation cardData) {
+
+            if (string.IsNullOrWhiteSpace(cardData.Name)) {
+                Helper.ShowAlert(Page, "[Name] is a mandatory field.");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(cardData.Gender)) {
+                Helper.ShowAlert(Page, "[Gender] is a mandatory field.");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(cardData.DateOfBirth)) {
+                Helper.ShowAlert(Page, "[Date Of Birth] is a mandatory field.");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(cardData.Email)) {
+                Helper.ShowAlert(Page, "[Email] is a mandatory field.");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(cardData.Phone)) {
+                Helper.ShowAlert(Page, "[Phone] is a mandatory field.");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(cardData.Address)) {
+                Helper.ShowAlert(Page, "[Address] is a mandatory field.");
+                return false;
+            }
+
+            return true;
 
         }
 

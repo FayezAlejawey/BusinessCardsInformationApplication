@@ -19,16 +19,22 @@
             <br />
 
             <div class="container">
-                <asp:Button runat="server" class="btn btn-info btn-md" ID="btnImportXml" OnClick="BtnImportXmlClicked" Text="Import XML Data"/>&nbsp;&nbsp;&nbsp;
-                <asp:Button runat="server" class="btn btn-info btn-md" ID="btnImportCsv" OnClick="BtnImportCsvClicked" Text="Import CSV Data"/>
+                <label for="fileUploadXml">Upload XML:</label>
+                <asp:FileUpload runat="server" class="form-control" ID="fileUploadXml" />
+                <asp:Button runat="server" class="btn btn-info btn-md" Text="Upload" ID="btnUploadXml" OnClick="BtnUploadXmlClicked"/>
+                <br />
+
+                <label for="fileUploadCsv">Upload CSV:</label>
+                <asp:FileUpload runat="server" class="form-control" ID="fileUploadCsv"/>
+                <asp:Button runat="server" class="btn btn-info btn-md" Text="Upload" ID="btnUploadCsv" OnClick="BtnUploadCsvClicked"/>
             </div>
             <div class="form-group">
                 <label for="txtBxName">Name:</label>
                 <asp:TextBox runat="server" class="form-control" ID="txtBxName"/>
             </div>
             <div class="form-group">
-                <label for="txtBxGender">Gender:</label>
-                <asp:TextBox runat="server" class="form-control" ID="txtBxGender"/>
+                <label for="lstGender">Gender:</label>
+                <asp:DropDownList runat="server" class="form-control" ID="lstGender"/>
             </div>
             <div class="form-group">
                 <label for="txtBxDateOfBirth">Date of birth:</label>
